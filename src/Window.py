@@ -5,10 +5,32 @@ from future.moves.tkinter import filedialog
 
 
 class Singleton:
+    """
+
+    Singleton class is used for the window class.
+
+    The Singleton is a Design Pattern with which it's possible to create only
+    one instance for a specific object. The functioning is easy, the class
+    contains an instance attribute, if this instance is None then an instance
+    is created, else nothing is done. After that, the unique instance is returned.
+
+    """
 
     __instance = None
 
     def __new__(cls, *args, **kwargs):
+        """
+
+        __new__() method for Window class.
+
+        This method is called at each new call for an instance creation,
+        in this case, to avoid the creation of many Singleton objects, if
+        the instance doesn't exist, Singleton __new__() method creates an
+        instance, and after that, the instance is returned at each call.
+
+        :rtype: Singleton
+
+        """
         if Singleton.__instance is None:
             Singleton.__instance = super(Singleton, cls).__new__(cls, *args, **kwargs)
         return Singleton.__instance
@@ -30,7 +52,7 @@ class Window(Singleton):
     HEIGHT = 900
     WINDOW = tkinter.Tk()
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> Singleton:
         """
         
         __new__() method for Window class.
@@ -46,12 +68,12 @@ class Window(Singleton):
 
         """
         instance = super().__new__(cls, *args, **kwargs)
-        instance.WINDOW.geometry(str(Window.WIDTH)+"x"+str(Window.HEIGHT))
-        instance.WINDOW.title('Sprite Sheet Splitter')
+        Window.WINDOW.geometry(str(Window.WIDTH)+"x"+str(Window.HEIGHT))
+        Window.WINDOW.title('Sprite Sheet Splitter')
         return instance
 
     @staticmethod
-    def browse_file():
+    def browse_file() -> str | None:
         """
         
         browse a file in your file explorer.
