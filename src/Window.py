@@ -105,7 +105,7 @@ class Window(Singleton):
 class WindowController:
 
     label = tkinter.Label(Window.WINDOW, width=100, height=4, fg='blue')
-    button = tkinter.Button(Window.WINDOW, width=100, height=4, text="Select a file", command=Window().browse_file)
+    button = tkinter.Button(Window.WINDOW, width=100, height=4, text="Select a file", command=Window.browse_file)
 
     def __init__(self):
         self.window = Window()
