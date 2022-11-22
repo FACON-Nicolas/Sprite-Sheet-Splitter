@@ -1,7 +1,7 @@
-import future.moves.tkinter as tkinter
+import tkinter
 import os
 
-from future.moves.tkinter import filedialog
+from tkinter import filedialog
 
 
 class Singleton:
@@ -15,7 +15,7 @@ class Singleton:
     is created, else nothing is done. After that, the unique instance is returned.
 
     """
-
+    
     __instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -52,7 +52,7 @@ class Window(Singleton):
     HEIGHT = 900
     WINDOW = tkinter.Tk()
 
-    def __new__(cls, *args, **kwargs) -> Singleton:
+    def __new__(cls, *args, **kwargs):
         """
         
         __new__() method for Window class.
@@ -73,7 +73,7 @@ class Window(Singleton):
         return instance
 
     @staticmethod
-    def browse_file() -> str | None:
+    def browse_file():
         """
         
         browse a file in your file explorer.
@@ -97,14 +97,16 @@ class Window(Singleton):
         ) 
 
         if filename != ():
-            label.configure(text="File Opened: "+filename)
-            label.pack()
+            WindowController.label.configure(text="File Opened: "+filename)
+            WindowController.label.pack()
             return filename
 
 
-if '__main__' == __name__:
-    w = Window()
-    button = tkinter.Button(Window.WINDOW, text="Text", command=w.browse_file)
-    label = tkinter.Label(Window.WINDOW, text="", width=100, height=100, fg='blue')
-    button.pack()
-    Window.WINDOW.mainloop()
+class WindowController:
+
+    label = tkinter.Label(Window.WINDOW, width=100, height=4, fg='blue')
+    button = tkinter.Button(Window.WINDOW, width=100, height=4, text="Select a file", command=Window().browse_file)
+
+    def __init__(self):
+        self.window = Window()
+        WindowController.button.pack()
