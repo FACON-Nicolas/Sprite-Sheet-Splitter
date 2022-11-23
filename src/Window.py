@@ -5,6 +5,7 @@ import os
 
 from tkinter import filedialog
 from PIL import Image, ImageTk
+from ImageResizeDecorator import ImageResizeDecorator
 
 
 class Singleton:
@@ -124,15 +125,15 @@ class Window(Singleton):
         :rtype: None
 
         """
-        img = ImageTk.PhotoImage(Image.open(Window.filename))
+        decorator = ImageResizeDecorator(1000, 600, Window.filename)
         Window.canvas = tkinter.Label(
             Window.WINDOW,
             width=1000,
             height=600,
-            image=img
+            image=decorator.new_img
         )
 
-        Window.canvas.image = img
+        Window.canvas.image = decorator.new_img
         Window.canvas.place(x=100, y=100)
 
     @staticmethod
