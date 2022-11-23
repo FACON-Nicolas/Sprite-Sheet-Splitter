@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 import tkinter
 import os
 
 from tkinter import filedialog
+from PIL import Image, ImageTk
 
 
 class Singleton:
@@ -18,7 +21,7 @@ class Singleton:
     
     __instance = None
 
-    def __new__(cls, *args, **kwargs):
+    def __new__(cls, *args, **kwargs) -> object:
         """
 
         __new__() method for Window class.
@@ -52,7 +55,12 @@ class Window(Singleton):
     HEIGHT = 900
     WINDOW = tkinter.Tk()
 
-    def __new__(cls, *args, **kwargs):
+    label = None
+    import_button = None
+    filename = None
+    canvas = None
+
+    def __new__(cls, *args, **kwargs) -> object:
         """
         
         __new__() method for Window class.
@@ -68,12 +76,11 @@ class Window(Singleton):
 
         """
         instance = super().__new__(cls, *args, **kwargs)
-        Window.WINDOW.geometry(str(Window.WIDTH)+"x"+str(Window.HEIGHT))
-        Window.WINDOW.title('Sprite Sheet Splitter')
+        cls.init_window()
         return instance
 
     @staticmethod
-    def browse_file():
+    def browse_file() -> str | None:
         """
         
         browse a file in your file explorer.
@@ -86,7 +93,7 @@ class Window(Singleton):
         :rtype: str | None
         
         """
-        filename = filedialog.askopenfilename(
+        filename = filedialog.askopenfile(
             initialdir=os.path.expanduser("~"),
             title="Select an image",
             filetypes=(
@@ -94,19 +101,59 @@ class Window(Singleton):
                 ("JPEG", "*.jpeg*"),
                 ("JPG", "*.jpg*")
             )
-        ) 
+        )
 
-        if filename != ():
-            WindowController.label.configure(text="File Opened: "+filename)
-            WindowController.label.pack()
-            return filename
+        try:
+            Window.label.configure(text="File Opened: " + str(filename))
+            Window.label.pack()
+            Window.filename = filename.name
+            Window.open_image()
+        except FileNotFoundError:
+            print('coucou')
 
+    @staticmethod
+    def open_image():
+        img = ImageTk.PhotoImage(Image.open(Window.filename))
+        Window.canvas = tkinter.Label(
+            Window.WINDOW,
+            width=1000,
+            height=600,
+            image=img
+        )
 
-class WindowController:
+        Window.canvas.image = img
+        Window.canvas.place(x=100, y=100)
 
-    label = tkinter.Label(Window.WINDOW, width=100, height=4, fg='blue')
-    button = tkinter.Button(Window.WINDOW, width=100, height=4, text="Select a file", command=Window.browse_file)
+    @staticmethod
+    def init_window() -> None:
+        """
 
-    def __init__(self):
-        self.window = Window()
-        WindowController.button.pack()
+        Init the window and its settings.
+
+        This method set the title and the size (x, y), the width
+        and the height values are static constants in the Window
+        class. The buttons and Labels are initialized and ready to
+        be used in the application, the mainloop is called here.
+
+        """
+        Window.WINDOW.title('Sprite Sheet Splitter')
+        Window.WINDOW.geometry(str(Window.WIDTH)+"x"+str(Window.HEIGHT))
+
+        Window.label = tkinter.Label(
+            Window.WINDOW,
+            width=30,
+            height=4,
+            fg='blue'
+        )
+
+        Window.import_button = tkinter.Button(
+            Window.WINDOW,
+            width=30,
+            height=4,
+            text="Select a file",
+            command=Window.browse_file,
+            background="red"
+        )
+
+        Window.import_button.place(x=1300, y=100)
+        Window.WINDOW.mainloop()
