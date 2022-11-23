@@ -112,7 +112,18 @@ class Window(Singleton):
             print('coucou')
 
     @staticmethod
-    def open_image():
+    def open_image() -> None:
+        """
+
+        Open an image from a file name.
+
+        the file name is given by the Window.filename attribute, from this attribute, we have
+        access to an image by the absolute path. Thanks to this absolute path and PIL library,
+        it's possible to get an Image compatible with Tkinter and show it in the application.
+
+        :rtype: None
+
+        """
         img = ImageTk.PhotoImage(Image.open(Window.filename))
         Window.canvas = tkinter.Label(
             Window.WINDOW,
@@ -132,8 +143,8 @@ class Window(Singleton):
 
         This method set the title and the size (x, y), the width
         and the height values are static constants in the Window
-        class. The buttons and Labels are initialized and ready to
-        be used in the application, the mainloop is called here.
+        class. The buttons and Labels are initialized and ready
+        to be used in the application, the mainloop is called here.
 
         """
         Window.WINDOW.title('Sprite Sheet Splitter')
