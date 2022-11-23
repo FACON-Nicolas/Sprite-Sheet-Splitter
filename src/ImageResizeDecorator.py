@@ -69,7 +69,7 @@ class ImageResizeDecorator:
         img = img.resize((width, height))
         ImageResizeDecorator.new_img = ImageTk.PhotoImage(img)
 
-    def get_size(self) -> tuple[int]:
+    def get_size(self) -> tuple[int, int]:
         """
 
         get self.strategy get size result and return it.
@@ -122,7 +122,7 @@ class ImageSizeStrategy:
 
 class ImageSizeStrategyHorizontal(ImageSizeStrategy):
 
-    def __init__(self, img):
+    def __init__(self, img) -> None:
         """
 
         ImageSizeStrategy's constructor, this constructor initialize the image.
@@ -130,7 +130,7 @@ class ImageSizeStrategyHorizontal(ImageSizeStrategy):
         """
         super().__init__(img)
 
-    def get_size(self):
+    def get_size(self) -> tuple[int, int]:
         """
 
         get the image ratio and choose the strategy.
@@ -146,7 +146,7 @@ class ImageSizeStrategyHorizontal(ImageSizeStrategy):
 
 class ImageSizeStrategyVertical(ImageSizeStrategy):
 
-    def __init__(self, img):
+    def __init__(self, img) -> None:
         """
 
         ImageSizeStrategy's constructor, this constructor initialize the image.
@@ -154,7 +154,7 @@ class ImageSizeStrategyVertical(ImageSizeStrategy):
         """
         super().__init__(img)
 
-    def get_size(self):
+    def get_size(self) -> tuple[int, int]:
         """
 
         get the image ratio and choose the strategy.
@@ -170,7 +170,7 @@ class ImageSizeStrategyVertical(ImageSizeStrategy):
 
 class ImageSizeStrategySquare(ImageSizeStrategy):
 
-    def __init__(self, img):
+    def __init__(self, img) -> None:
         """
 
         ImageSizeStrategy's constructor, this constructor initialize the image.
@@ -178,7 +178,7 @@ class ImageSizeStrategySquare(ImageSizeStrategy):
         """
         super().__init__(img)
 
-    def get_size(self):
+    def get_size(self) -> tuple[int, int]:
         """
 
         get the image ratio and choose the strategy.
