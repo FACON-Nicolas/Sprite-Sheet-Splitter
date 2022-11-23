@@ -69,10 +69,27 @@ class ImageResizeDecorator:
         img = img.resize((width, height))
         ImageResizeDecorator.new_img = ImageTk.PhotoImage(img)
 
-    def get_size(self):
+    def get_size(self) -> tuple[int]:
+        """
+
+        get self.strategy get size result and return it.
+
+        :return: image size
+        :rtype: tuple[int]
+
+        """
         return self.strategy.get_size()
 
-    def init_strategy(self):
+    def init_strategy(self) -> None:
+        """
+
+        get the image ratio and choose the strategy.
+
+        if the ratio == 1 then the strategy chosen will be ImageSizeStrategySquare()
+        if the ratio < 1 then the strategy chosen will be ImageSizeStrategyVertical()
+        if the ratio > 1 then the strategy chosen will be ImageSizeStrategyHorizontal()
+
+        """
         ratio = self.get_ratio()
         if ratio == int(ratio):
             self.strategy = ImageSizeStrategySquare(self)
@@ -83,18 +100,45 @@ class ImageResizeDecorator:
 
 
 class ImageSizeStrategy:
+    """
 
-    def __init__(self, img: ImageResizeDecorator):
-        print("init")
+    ImageSizeStrategy class is a Strategy design pattern to get img size.
+
+    There are 3 implementation for this strategy, the horizontal case, if
+    the image ratio is greater than 1, the square case if the ratio is
+    equal to 1 and the vertical case if the ratio is less than 1.
+
+    The strategy common operation is get_size().
+
+    """
+    def __init__(self, img: ImageResizeDecorator) -> None:
+        """
+
+        ImageSizeStrategy's constructor, this constructor initialize the image.
+
+        """
         self.img = img
 
 
 class ImageSizeStrategyHorizontal(ImageSizeStrategy):
 
     def __init__(self, img):
+        """
+
+        ImageSizeStrategy's constructor, this constructor initialize the image.
+
+        """
         super().__init__(img)
 
     def get_size(self):
+        """
+
+        get the image ratio and choose the strategy.
+
+        The ratio is a tuple (width, height) and width = img.width
+        and height = width//ratio. this result is returned at the end.
+
+        """
         width = self.img.width
         height = int(self.img.width//self.img.get_ratio())
         return width, height
@@ -103,9 +147,22 @@ class ImageSizeStrategyHorizontal(ImageSizeStrategy):
 class ImageSizeStrategyVertical(ImageSizeStrategy):
 
     def __init__(self, img):
+        """
+
+        ImageSizeStrategy's constructor, this constructor initialize the image.
+
+        """
         super().__init__(img)
 
     def get_size(self):
+        """
+
+        get the image ratio and choose the strategy.
+
+        The ratio is a tuple (width, height) and width = img.height
+        and height = width//ratio. this result is returned at the end.
+
+        """
         height = self.img.height
         width = int(height // self.img.get_ratio())
         return width, height
@@ -114,8 +171,21 @@ class ImageSizeStrategyVertical(ImageSizeStrategy):
 class ImageSizeStrategySquare(ImageSizeStrategy):
 
     def __init__(self, img):
+        """
+
+        ImageSizeStrategy's constructor, this constructor initialize the image.
+
+        """
         super().__init__(img)
 
     def get_size(self):
+        """
+
+        get the image ratio and choose the strategy.
+
+        The ratio is a tuple (width, height) and width = img.height
+        and height = width because the image ratio = 1, result returned.
+
+        """
         width = self.img.height
         return width, width
