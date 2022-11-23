@@ -4,7 +4,6 @@ import tkinter
 import os
 
 from tkinter import filedialog
-from PIL import Image, ImageTk
 from ImageResizeDecorator import ImageResizeDecorator
 
 
@@ -110,7 +109,9 @@ class Window(Singleton):
             Window.filename = filename.name
             Window.open_image()
         except FileNotFoundError:
-            print('coucou')
+            pass
+        except AttributeError:
+            pass
 
     @staticmethod
     def open_image() -> None:

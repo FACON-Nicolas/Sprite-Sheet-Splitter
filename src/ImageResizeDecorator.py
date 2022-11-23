@@ -36,6 +36,8 @@ class ImageResizeDecorator:
         self.width = width
         self.height = height
         self.decore = decore
+        self.strategy = None
+        self.init_strategy()
         self.resize_as_img_tk()
 
     def get_ratio(self) -> float:
@@ -47,7 +49,8 @@ class ImageResizeDecorator:
         :rtype: float
 
         """
-        return self.width / self.height
+        img = Image.open(self.decore)
+        return img.width / img.height
 
     def resize_as_img_tk(self) -> None:
         """
@@ -60,8 +63,59 @@ class ImageResizeDecorator:
         resized, the result is stored in the static attribute new_img.
 
         """
-        width = int(self.width)
-        height = int(width // self.get_ratio())
+        width, height = self.get_size()
+        print(width, height)
         img = Image.open(self.decore)
         img = img.resize((width, height))
         ImageResizeDecorator.new_img = ImageTk.PhotoImage(img)
+
+    def get_size(self):
+        return self.strategy.get_size()
+
+    def init_strategy(self):
+        ratio = self.get_ratio()
+        if ratio == int(ratio):
+            self.strategy = ImageSizeStrategySquare(self)
+        elif ratio < 1:
+            self.strategy = ImageSizeStrategyVertical(self)
+        else:
+            self.strategy = ImageSizeStrategyHorizontal(self)
+
+
+class ImageSizeStrategy:
+
+    def __init__(self, img: ImageResizeDecorator):
+        print("init")
+        self.img = img
+
+
+class ImageSizeStrategyHorizontal(ImageSizeStrategy):
+
+    def __init__(self, img):
+        super().__init__(img)
+
+    def get_size(self):
+        width = self.img.width
+        height = int(self.img.width//self.img.get_ratio())
+        return width, height
+
+
+class ImageSizeStrategyVertical(ImageSizeStrategy):
+
+    def __init__(self, img):
+        super().__init__(img)
+
+    def get_size(self):
+        height = self.img.height
+        width = int(height // self.img.get_ratio())
+        return width, height
+
+
+class ImageSizeStrategySquare(ImageSizeStrategy):
+
+    def __init__(self, img):
+        super().__init__(img)
+
+    def get_size(self):
+        width = self.img.height
+        return width, width
