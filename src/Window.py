@@ -58,7 +58,7 @@ class Window(Singleton):
     label = None
     import_button = None
     filename = None
-    canvas = None
+    picture_label = None
 
     def __new__(cls, *args, **kwargs) -> object:
         """
@@ -104,7 +104,7 @@ class Window(Singleton):
         )
 
         try:
-            Window.label.configure(text="File Opened: " + str(filename))
+            Window.label.configure(text="File Opened: " + filename.name)
             Window.label.pack()
             Window.filename = filename.name
             Window.open_image()
@@ -128,15 +128,15 @@ class Window(Singleton):
         """
         decorator = ImageResizeDecorator(1000, 600, Window.filename)
         splitter = ImageSplitterDecorator(PIL.Image.open(Window.filename), 2, 5)
-        Window.canvas = tkinter.Label(
+        Window.picture_label = tkinter.Label(
             Window.WINDOW,
             width=1000,
             height=600,
             image=decorator.new_img
         )
 
-        Window.canvas.image = decorator.new_img
-        Window.canvas.place(x=100, y=100)
+        Window.picture_label.image = decorator.new_img
+        Window.picture_label.place(x=100, y=100)
         splitter.split()
 
     @staticmethod
@@ -156,7 +156,7 @@ class Window(Singleton):
 
         Window.label = tkinter.Label(
             Window.WINDOW,
-            width=30,
+            width=100,
             height=4,
             fg='blue'
         )
