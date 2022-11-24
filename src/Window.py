@@ -1,10 +1,10 @@
 from __future__ import annotations
-
 import tkinter
 import os
-
 from tkinter import filedialog
+import PIL.Image
 from ImageResizeDecorator import ImageResizeDecorator
+from ImageSplitterDecorator import ImageSplitterDecorator
 
 
 class Singleton:
@@ -127,6 +127,7 @@ class Window(Singleton):
 
         """
         decorator = ImageResizeDecorator(1000, 600, Window.filename)
+        splitter = ImageSplitterDecorator(PIL.Image.open(Window.filename), 2, 5)
         Window.canvas = tkinter.Label(
             Window.WINDOW,
             width=1000,
@@ -136,6 +137,7 @@ class Window(Singleton):
 
         Window.canvas.image = decorator.new_img
         Window.canvas.place(x=100, y=100)
+        splitter.split()
 
     @staticmethod
     def init_window() -> None:
