@@ -58,7 +58,28 @@ class Window(Singleton):
     label = None
     import_button = None
     filename = None
-    canvas = None
+    picture_label = None
+
+    row_field = None
+    column_field = None
+
+    row_label = None
+    column_label = None
+
+    left_margin_field = None
+    right_margin_field = None
+    top_margin_field = None
+    bottom_margin_field = None
+
+    left_margin_label = None
+    right_margin_label = None
+    top_margin_label = None
+    bottom_margin_label = None
+
+    cut_button = None
+    save_button = None
+
+    splitter = None
 
     def __new__(cls, *args, **kwargs) -> object:
         """
@@ -80,7 +101,7 @@ class Window(Singleton):
         return instance
 
     @staticmethod
-    def browse_file() -> str | None:
+    def browse_file() -> None:
         """
         
         browse a file in your file explorer.
@@ -104,13 +125,15 @@ class Window(Singleton):
         )
 
         try:
-            Window.label.configure(text="File Opened: " + str(filename))
+            Window.label.configure(text="File Opened: " + filename.name)
             Window.label.pack()
             Window.filename = filename.name
             Window.open_image()
         except FileNotFoundError:
             pass
         except AttributeError:
+            pass
+        except ValueError:
             pass
 
     @staticmethod
@@ -127,17 +150,45 @@ class Window(Singleton):
 
         """
         decorator = ImageResizeDecorator(1000, 600, Window.filename)
-        splitter = ImageSplitterDecorator(PIL.Image.open(Window.filename), 2, 5)
-        Window.canvas = tkinter.Label(
+
+        Window.picture_label = tkinter.Label(
             Window.WINDOW,
             width=1000,
             height=600,
             image=decorator.new_img
         )
 
-        Window.canvas.image = decorator.new_img
-        Window.canvas.place(x=100, y=100)
-        splitter.split()
+        Window.picture_label.image = decorator.new_img
+        Window.picture_label.place(x=100, y=100)
+
+    @staticmethod
+    def cut_image() -> None:
+        """
+
+        get the current image and call the methods to split it.
+
+        a splitter is instanced to a static Window attribute and
+        from this, it's possible to split the image, the value in the
+        field are required because they are used in this method.
+
+        :return: nothing
+        :rtype: None
+
+        """
+        try:
+            Window.splitter = ImageSplitterDecorator(
+                PIL.Image.open(Window.filename),
+                int(Window.row_field.get()),
+                int(Window.column_field.get()),
+                int(Window.left_margin_field.get()),
+                int(Window.right_margin_field.get()),
+                int(Window.top_margin_field.get()),
+                int(Window.bottom_margin_field.get())
+            )
+
+            Window.splitter.split()
+        except ValueError:
+            pass
 
     @staticmethod
     def init_window() -> None:
@@ -156,7 +207,7 @@ class Window(Singleton):
 
         Window.label = tkinter.Label(
             Window.WINDOW,
-            width=30,
+            width=100,
             height=4,
             fg='blue'
         )
@@ -170,5 +221,93 @@ class Window(Singleton):
             background="red"
         )
 
+        Window.row_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23
+        )
+
+        Window.column_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23
+        )
+
+        Window.left_margin_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23
+        )
+
+        Window.right_margin_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23
+        )
+
+        Window.top_margin_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23
+        )
+
+        Window.bottom_margin_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23
+        )
+
+        Window.row_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text='row'
+        )
+
+        Window.column_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text='column'
+        )
+
+        Window.left_margin_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text="left"
+        )
+
+        Window.right_margin_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text="right"
+        )
+
+        Window.top_margin_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text="top"
+        )
+
+        Window.bottom_margin_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text="bottom"
+        )
+
+        Window.cut_button = tkinter.Button(
+            Window.WINDOW,
+            width=30,
+            height=4,
+            text="cut image",
+            command=Window.cut_image,
+            background="green"
+        )
+
         Window.import_button.place(x=1300, y=100)
+        Window.row_label.place(x=1300, y=200)
+        Window.row_field.place(x=1370, y=200)
+        Window.column_label.place(x=1300, y=260)
+        Window.column_field.place(x=1370, y=260)
+        Window.left_margin_label.place(x=1300, y=320)
+        Window.left_margin_field.place(x=1370, y=320)
+        Window.right_margin_label.place(x=1300, y=380)
+        Window.right_margin_field.place(x=1370, y=380)
+        Window.top_margin_label.place(x=1300, y=440)
+        Window.top_margin_field.place(x=1370, y=440)
+        Window.bottom_margin_label.place(x=1300, y=500)
+        Window.bottom_margin_field.place(x=1370, y=500)
+        Window.cut_button.place(x=1300, y=560)
         Window.WINDOW.mainloop()
