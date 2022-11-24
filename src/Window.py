@@ -60,6 +60,20 @@ class Window(Singleton):
     filename = None
     picture_label = None
 
+    row_field = None
+    column_field = None
+
+    row_label = None
+    column_label = None
+
+    left_margin_field = None
+    right_margin_field = None
+    top_margin_field = None
+    bottom_margin_field = None
+
+    cut_button = None
+    save_button = None
+
     def __new__(cls, *args, **kwargs) -> object:
         """
         
@@ -80,7 +94,7 @@ class Window(Singleton):
         return instance
 
     @staticmethod
-    def browse_file() -> str | None:
+    def browse_file() -> None:
         """
         
         browse a file in your file explorer.
@@ -127,7 +141,13 @@ class Window(Singleton):
 
         """
         decorator = ImageResizeDecorator(1000, 600, Window.filename)
-        splitter = ImageSplitterDecorator(PIL.Image.open(Window.filename), 2, 5)
+
+        splitter = ImageSplitterDecorator(
+            PIL.Image.open(Window.filename),
+            int(Window.row_field.get()),
+            int(Window.column_field.get())
+        )
+
         Window.picture_label = tkinter.Label(
             Window.WINDOW,
             width=1000,
@@ -170,5 +190,31 @@ class Window(Singleton):
             background="red"
         )
 
+        Window.row_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23
+        )
+
+        Window.column_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23
+        )
+
+        Window.row_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text='row'
+        )
+
+        Window.column_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text='column'
+        )
+
         Window.import_button.place(x=1300, y=100)
+        Window.row_label.place(x=1300, y=200)
+        Window.row_field.place(x=1370, y=200)
+        Window.column_label.place(x=1300, y=260)
+        Window.column_field.place(x=1370, y=260)
         Window.WINDOW.mainloop()
