@@ -5,6 +5,7 @@ from tkinter import filedialog
 import PIL.Image
 from ImageResizeDecorator import ImageResizeDecorator
 from ImageSplitterDecorator import ImageSplitterDecorator
+from ImageSaveDecorator import ImageSaveDecorator
 
 
 class Singleton:
@@ -75,6 +76,9 @@ class Window(Singleton):
     right_margin_label = None
     top_margin_label = None
     bottom_margin_label = None
+
+    name_label = None
+    name_field = None
 
     cut_button = None
     save_button = None
@@ -162,7 +166,7 @@ class Window(Singleton):
         Window.picture_label.place(x=100, y=100)
 
     @staticmethod
-    def cut_image() -> None:
+    def cut_image() -> list | None:
         """
 
         get the current image and call the methods to split it.
@@ -186,8 +190,31 @@ class Window(Singleton):
                 int(Window.bottom_margin_field.get())
             )
 
-            Window.splitter.split()
+            return Window.splitter.split()
         except ValueError:
+            pass
+
+    @staticmethod
+    def save() -> None:
+        """
+
+        cut image, and save it as asked by player.
+
+        Get all settings (row count, column count, all margin(left, right, top, bottom),
+        name, path) and uses them to save all sprites split as sprites.
+
+        :return: nothing
+        :rtype: None
+
+        """
+        path = filedialog.askdirectory()
+        try:
+            images = Window.cut_image()
+            img_type = Window.filename.split('.')[-1]
+            for i in range(len(images)):
+                dec = ImageSaveDecorator(images[i], path, Window.name_field.get()+str(i) + '.' + img_type)
+                dec.save()
+        except FileNotFoundError:
             pass
 
     @staticmethod
@@ -292,8 +319,19 @@ class Window(Singleton):
             width=30,
             height=4,
             text="cut image",
-            command=Window.cut_image,
+            command=Window.save,
             background="green"
+        )
+
+        Window.name_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23
+        )
+
+        Window.name_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text="name"
         )
 
         Window.import_button.place(x=1300, y=100)
@@ -309,5 +347,7 @@ class Window(Singleton):
         Window.top_margin_field.place(x=1370, y=440)
         Window.bottom_margin_label.place(x=1300, y=500)
         Window.bottom_margin_field.place(x=1370, y=500)
-        Window.cut_button.place(x=1300, y=560)
+        Window.name_label.place(x=1300, y=560)
+        Window.name_field.place(x=1370, y=560)
+        Window.cut_button.place(x=1300, y=620)
         Window.WINDOW.mainloop()
