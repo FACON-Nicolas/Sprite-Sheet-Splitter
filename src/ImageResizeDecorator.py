@@ -64,7 +64,6 @@ class ImageResizeDecorator:
 
         """
         width, height = self.get_size()
-        print(width, height)
         img = Image.open(self.decore)
         img = img.resize((width, height))
         ImageResizeDecorator.new_img = ImageTk.PhotoImage(img)
