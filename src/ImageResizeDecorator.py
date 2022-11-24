@@ -2,9 +2,6 @@ from PIL import Image, ImageTk
 
 
 class ImageResizeDecorator:
-
-    new_img = None
-
     """
 
     ImageResizeDecorator class is used to resize image and keep the ratio.
@@ -15,6 +12,9 @@ class ImageResizeDecorator:
     and keep a clean code if I would work on the project again.
 
     """
+
+    new_img = None
+
     def __init__(self, width: int, height: int,  decore: str) -> None:
         """
 
