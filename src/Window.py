@@ -71,6 +71,11 @@ class Window(Singleton):
     top_margin_field = None
     bottom_margin_field = None
 
+    left_margin_label = None
+    right_margin_label = None
+    top_margin_label = None
+    bottom_margin_label = None
+
     cut_button = None
     save_button = None
 
@@ -126,6 +131,8 @@ class Window(Singleton):
             pass
         except AttributeError:
             pass
+        except ValueError:
+            pass
 
     @staticmethod
     def open_image() -> None:
@@ -145,7 +152,11 @@ class Window(Singleton):
         splitter = ImageSplitterDecorator(
             PIL.Image.open(Window.filename),
             int(Window.row_field.get()),
-            int(Window.column_field.get())
+            int(Window.column_field.get()),
+            int(Window.left_margin_field.get()),
+            int(Window.right_margin_field.get()),
+            int(Window.top_margin_field.get()),
+            int(Window.bottom_margin_field.get())
         )
 
         Window.picture_label = tkinter.Label(
@@ -200,6 +211,26 @@ class Window(Singleton):
             width=23
         )
 
+        Window.left_margin_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23
+        )
+
+        Window.right_margin_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23
+        )
+
+        Window.top_margin_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23
+        )
+
+        Window.bottom_margin_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23
+        )
+
         Window.row_label = tkinter.Label(
             Window.WINDOW,
             width=10,
@@ -212,9 +243,41 @@ class Window(Singleton):
             text='column'
         )
 
+        Window.left_margin_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text="left"
+        )
+
+        Window.right_margin_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text="right"
+        )
+
+        Window.top_margin_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text="top"
+        )
+
+        Window.bottom_margin_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text="bottom"
+        )
+
         Window.import_button.place(x=1300, y=100)
         Window.row_label.place(x=1300, y=200)
         Window.row_field.place(x=1370, y=200)
         Window.column_label.place(x=1300, y=260)
         Window.column_field.place(x=1370, y=260)
+        Window.left_margin_label.place(x=1300, y=320)
+        Window.left_margin_field.place(x=1370, y=320)
+        Window.right_margin_label.place(x=1300, y=380)
+        Window.right_margin_field.place(x=1370, y=380)
+        Window.top_margin_label.place(x=1300, y=440)
+        Window.top_margin_field.place(x=1370, y=440)
+        Window.bottom_margin_label.place(x=1300, y=500)
+        Window.bottom_margin_field.place(x=1370, y=500)
         Window.WINDOW.mainloop()
