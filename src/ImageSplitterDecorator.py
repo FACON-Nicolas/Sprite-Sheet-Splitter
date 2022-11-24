@@ -72,7 +72,6 @@ class ImageSplitterDecorator:
         array = self.resize()
         row_size = int(len(array) / self.rows)
         col_size = (len(array[0]) / self.columns)
-        print(self.rows, self.columns)
         pictures = []
         for i in range(self.rows):
             row_start = int(i * row_size)
@@ -87,6 +86,23 @@ class ImageSplitterDecorator:
         return pictures
 
     def resize(self) -> np.array:
+        """
+
+        resize the image thanks to the margin given as argument in
+        the splitter decorator constructor, and returned as array.
+
+        example:
+
+        margin: top=1, right=1, bottom=1, left=1
+
+        [[0, 0, 0],
+        [0, 1, 0],
+        [0, 0, 0]] -> [[1]]
+
+        :return: image resized thanks to margin
+        :rtype: numpy.array
+
+        """
         array = np.array(self.decore)
         if self.left != 0:
             array = [L[self.left:] for L in array]
