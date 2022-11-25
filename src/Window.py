@@ -5,7 +5,7 @@ from tkinter import filedialog
 import PIL.Image
 from ImageResizeDecorator import ImageResizeDecorator
 from ImageSplitterDecorator import ImageSplitterDecorator
-from ImageSaveDecorator import ImageSaveDecorator
+from ImageSaveComposite import ImageSaveComposite
 
 
 class Singleton:
@@ -211,9 +211,8 @@ class Window(Singleton):
         try:
             images = Window.cut_image()
             img_type = Window.filename.split('.')[-1]
-            for i in range(len(images)):
-                dec = ImageSaveDecorator(images[i], path, Window.name_field.get()+str(i) + '.' + img_type)
-                dec.save()
+            composite = ImageSaveComposite.from_images_to_composite(images, path, Window.name_field.get(), img_type)
+            composite.save()
         except FileNotFoundError:
             pass
 
