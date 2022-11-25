@@ -82,7 +82,6 @@ class ImageSplitterDecorator:
                 col_end = int(col_size * (j + 1))
                 pic = np.array([L[col_start:col_end] for L in picture])
                 pictures.append(Image.fromarray(pic))
-                pictures[-1].show()
         return pictures
 
     def resize(self) -> np.array:
