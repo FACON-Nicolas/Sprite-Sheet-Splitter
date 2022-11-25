@@ -3,8 +3,8 @@ import tkinter
 import os
 from tkinter import filedialog
 import PIL.Image
-from ImageResizeDecorator import ImageResizeDecorator
-from ImageSplitterDecorator import ImageSplitterDecorator
+from ImageResize import ImageResizeDecorator
+from ImageSplitter import ImageSplitterDecorator
 from ImageSaveComposite import ImageSaveComposite
 
 
