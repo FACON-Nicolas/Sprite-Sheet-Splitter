@@ -1,6 +1,6 @@
 from PIL import Image
 import os
-from ImageSplitterDecorator import ImageSplitterDecorator
+from ImageSplitter import ImageSplitterDecorator
 
 
 class ImageSaveComposite:
