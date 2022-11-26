@@ -6,6 +6,7 @@ import PIL.Image
 from ImageResize import ImageResizeDecorator
 from ImageSplitter import ImageSplitterDecorator
 from ImageSaveComposite import ImageSaveComposite
+import traceback
 
 
 class Singleton:
@@ -192,7 +193,7 @@ class Window(Singleton):
 
             return Window.splitter.split()
         except ValueError:
-            pass
+            print(traceback.format_exc())
 
     @staticmethod
     def save() -> None:
