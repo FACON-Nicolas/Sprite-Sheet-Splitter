@@ -1,3 +1,4 @@
 import Window
 
-w = Window.Window()
+if __name__ == '__main__':
+    w = Window.Window()
