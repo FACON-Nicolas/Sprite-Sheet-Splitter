@@ -12,7 +12,7 @@ class ImageSaveComposite:
     filename the constructor make a concatenation between path and name.
 
     """
-    def __init__(self, path: str, name: str, type: str) -> None:
+    def __init__(self, path: str, name: str, type_img: str) -> None:
         """
 
         ImageSaveComposite constructor, needs an img, a path, a name.
@@ -27,7 +27,7 @@ class ImageSaveComposite:
         self.images = []
         self.path = path + '/'
         self.name = name
-        self.type = type
+        self.type = type_img
 
     def save(self) -> None:
         """
@@ -48,16 +48,51 @@ class ImageSaveComposite:
             self.images[i].save(name)
 
     def append(self, image: Image) -> None:
+        """
+
+        add image in composite.
+
+        To add this image in the composite, the class possesses a list
+        to store all images, composite.append(image) calls append in list.
+
+        :return: nothing
+        :rtype: None
+
+        """
         self.images.append(image)
 
     def remove(self, image: Image) -> None:
+        """
+
+        add image in composite.
+
+        To add this image in the composite, the class possesses a list
+        to store all images, composite.remove(image) calls remove in list,
+        but List.remove(image) throws ValueError if the value is not in list,
+        so a try / catch is implemented in this method to handle Exceptions.
+
+        :return: nothing
+        :rtype: None
+
+        """
         try:
             self.images.remove(image)
         except ValueError:
             pass
 
     @staticmethod
-    def from_images_to_composite(images: list[Image], path: str, name: str, type: str) -> object:
-        composite = ImageSaveComposite(path, name, type)
+    def from_images_to_composite(images: list[Image], path: str, name: str, type_img: str) -> object:
+        """
+
+        construct a composite from a list[Image], a path, a name and an image type.
+
+        This static method instances a new composite, get the images empty list and
+        replace it by the list[Image] in parameters and return the new composite.
+
+        :return: nothing
+        :rtype: None
+
+        """
+        composite = ImageSaveComposite(path, name, type_img)
         composite.images = images
         return composite

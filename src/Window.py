@@ -6,6 +6,7 @@ import PIL.Image
 from ImageResize import ImageResizeDecorator
 from ImageSplitter import ImageSplitterDecorator
 from ImageSaveComposite import ImageSaveComposite
+import traceback
 
 
 class Singleton:
@@ -192,7 +193,7 @@ class Window(Singleton):
 
             return Window.splitter.split()
         except ValueError:
-            pass
+            print(traceback.format_exc())
 
     @staticmethod
     def save() -> None:
@@ -231,6 +232,9 @@ class Window(Singleton):
         Window.WINDOW.title('Sprite Sheet Splitter')
         Window.WINDOW.geometry(str(Window.WIDTH)+"x"+str(Window.HEIGHT))
 
+        zero = tkinter.StringVar()
+        zero.set('0')
+
         Window.label = tkinter.Label(
             Window.WINDOW,
             width=100,
@@ -259,22 +263,26 @@ class Window(Singleton):
 
         Window.left_margin_field = tkinter.Entry(
             Window.WINDOW,
-            width=23
+            width=23,
+            textvariable=zero
         )
 
         Window.right_margin_field = tkinter.Entry(
             Window.WINDOW,
-            width=23
+            width=23,
+            textvariable=zero
         )
 
         Window.top_margin_field = tkinter.Entry(
             Window.WINDOW,
-            width=23
+            width=23,
+            textvariable=zero
         )
 
         Window.bottom_margin_field = tkinter.Entry(
             Window.WINDOW,
-            width=23
+            width=23,
+            textvariable=zero
         )
 
         Window.row_label = tkinter.Label(
@@ -313,6 +321,17 @@ class Window(Singleton):
             text="bottom"
         )
 
+        Window.name_field = tkinter.Entry(
+            Window.WINDOW,
+            width=23,
+        )
+
+        Window.name_label = tkinter.Label(
+            Window.WINDOW,
+            width=10,
+            text="name"
+        )
+
         Window.cut_button = tkinter.Button(
             Window.WINDOW,
             width=30,
@@ -320,17 +339,6 @@ class Window(Singleton):
             text="cut image",
             command=Window.save,
             background="green"
-        )
-
-        Window.name_field = tkinter.Entry(
-            Window.WINDOW,
-            width=23
-        )
-
-        Window.name_label = tkinter.Label(
-            Window.WINDOW,
-            width=10,
-            text="name"
         )
 
         Window.import_button.place(x=1300, y=100)

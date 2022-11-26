@@ -20,7 +20,7 @@ class ImageSplitterDecorator:
                  left: int = 0,
                  right: int = 0,
                  bottom: int = 0,
-                 top: int = 0):
+                 top: int = 0) -> None:
         """
 
         ImageSplitterDecorator's constructor, init rows, columns but also the margins
@@ -55,7 +55,7 @@ class ImageSplitterDecorator:
         self.right = right
         self.top = top
         self.bottom = bottom
-        self.strategy = SplitterStrategy(self.rows, self.columns, self.left, self.right, self.top, self.bottom)
+        self.strategy = SplitterAutoStrategy(self.rows, self.columns)
 
     def choose_strategy(self):
         if not (self.left == self.right == self.top == self.bottom == 0):
@@ -96,7 +96,13 @@ class SplitterStrategy:
 
     """
 
-    def __init__(self, rows: int, columns: int, left: int, right: int, top: int, bottom: int) -> None:
+    def __init__(self,
+                 rows: int,
+                 columns: int = 0,
+                 left: int = 0,
+                 right: int = 0,
+                 top: int = 0,
+                 bottom: int = 0) -> None:
         """
 
         SplitterStrategy class' constructor, initializes, row and column counts and all margins.
@@ -179,3 +185,63 @@ class SplitterStrategy:
                 pic = np.array([L[col_start:col_end] for L in picture])
                 pictures.append(Image.fromarray(pic))
         return pictures
+
+
+class SplitterAutoStrategy(SplitterStrategy):
+
+    def __init__(self, rows: int, columns: int) -> None:
+        super().__init__(rows, columns)
+
+    def split(self, image: ImageSplitterDecorator) -> list[Image]:
+        pictures = super(SplitterAutoStrategy, self).split(image)
+        pics = []
+        for img in pictures:
+            img = np.array(img)
+            img = SplitterAutoStrategy.cut(img)
+            pics.append(Image.fromarray(img))
+        return pics
+
+    @staticmethod
+    def cut(image: np.array) -> np.array:
+
+        image = SplitterAutoStrategy.cut_top(image)
+        image = SplitterAutoStrategy.cut_bottom(image)
+        image = SplitterAutoStrategy.cut_left(image)
+        image = SplitterAutoStrategy.cut_right(image)
+        return np.array(image)
+
+    @staticmethod
+    def column_all(image, index):
+        value = image[0].tolist()[index]
+        for i in range(1, len(image)):
+            if image[i].tolist()[index] != value:
+                return False
+        return True
+
+    @staticmethod
+    def cut_top(image: np.array) -> np.array:
+        limit = 0
+        while limit < len(image) and np.all(image[limit]):
+            limit += 1
+        return image[limit:]
+
+    @staticmethod
+    def cut_bottom(image: np.array) -> np.array:
+        limit = len(image)-1
+        while limit >= 0 and np.all(image[limit]):
+            limit -= 1
+        return image[:limit]
+
+    @staticmethod
+    def cut_left(image: np.array) -> np.array:
+        limit = 0
+        while limit < len(image[0]) and SplitterAutoStrategy.column_all(image, limit):
+            limit += 1
+        return [line[limit:] for line in image]
+
+    @staticmethod
+    def cut_right(image: np.array) -> np.array:
+        limit = len(image[0])-1
+        while limit >= 0 and SplitterAutoStrategy.column_all(image, limit):
+            limit -= 1
+        return [line[:limit] for line in image]
