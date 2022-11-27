@@ -11,6 +11,8 @@ This sprite sheet splitter can split a sprite sheet with `N` rows and `N` column
 * **[Credits](#credits)**
 * **[Features](#features)**
   * **[Design Pattern Implementation](#design-pattern-implementation)**
+* **[Installation](#installation)**
+* **[Version](#version)**
 
 # Credits
 
