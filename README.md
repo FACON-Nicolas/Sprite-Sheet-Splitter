@@ -29,6 +29,8 @@ This project uses many design patterns:
  + **strategy** to implements many algorithm to split and resize.
 ![](https://sourcemaking.com/files/v2/content/patterns/Strategy_example1.png)
  + **composite** to save many image with only a method.
+
+
 ![](https://refactoring.guru/images/patterns/diagrams/composite/problem-en.png?id=3320d7ddc5bdc3e43752bb4393710794)
 
 # Installation
