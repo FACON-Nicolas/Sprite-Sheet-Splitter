@@ -123,9 +123,9 @@ class Window(Singleton):
             initialdir=os.path.expanduser("~"),
             title="Select an image",
             filetypes=(
-                ("PNG", "*.png*"),
-                ("JPEG", "*.jpeg*"),
-                ("JPG", "*.jpg*")
+                ("PNG", "*.png"),
+                ("JPEG", "*.jpeg"),
+                ("JPG", "*.jpg")
             )
         )
 
