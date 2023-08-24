@@ -1,4 +1,8 @@
 import Window
+import flet as ft
 
 if __name__ == '__main__':
-    w = Window.Window()
+    ft.app(
+        target=Window.main,
+        assets_dir="assets"
+    )

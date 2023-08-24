@@ -8,6 +8,8 @@ from ImageSplitter import ImageSplitterDecorator
 from ImageSaveComposite import ImageSaveComposite
 import traceback
 
+import flet as ft
+
 
 class Singleton:
     """
@@ -20,7 +22,7 @@ class Singleton:
     is created, else nothing is done. After that, the unique instance is returned.
 
     """
-    
+
     __instance = None
 
     def __new__(cls, *args, **kwargs) -> object:
@@ -59,7 +61,7 @@ class Window(Singleton):
 
     label = None
     import_button = None
-    filename = None
+    filename: str = None
     picture_label = None
 
     row_field = None
@@ -83,8 +85,16 @@ class Window(Singleton):
 
     cut_button = None
     save_button = None
+    theme_button: ft.IconButton = None
+    isLight: bool = False
+    main_container: ft.Container
+    content_container: ft.Row
+    image_container: ft.Container
+    form_container: ft.Row
+    image: ft.Image
 
-    splitter = None
+    splitter: ImageSplitterDecorator = None
+    page: ft.Page = None
 
     def __new__(cls, *args, **kwargs) -> object:
         """
@@ -212,10 +222,26 @@ class Window(Singleton):
         try:
             images = Window.cut_image()
             img_type = Window.filename.split('.')[-1]
-            composite = ImageSaveComposite.from_images_to_composite(images, path, Window.name_field.get(), img_type)
+            composite = ImageSaveComposite.from_images_to_composite(
+                images,
+                path,
+                Window.name_field.get(),
+                img_type
+            )
             composite.save()
         except FileNotFoundError:
             pass
+
+    @staticmethod
+    def change_theme():
+        Window.isLight = not Window.isLight
+        if Window.isLight:
+            Window.page.theme_mode = ft.ThemeMode.LIGHT
+            Window.theme_button.icon = ft.icons.DARK_MODE
+        else:
+            Window.page.theme_mode = ft.ThemeMode.DARK
+            Window.theme_button.icon = ft.icons.LIGHT_MODE
+        Window.page.update()
 
     @staticmethod
     def init_window() -> None:
@@ -229,9 +255,77 @@ class Window(Singleton):
         to be used in the application, the mainloop is called here.
 
         """
-        Window.WINDOW.title('Sprite Sheet Splitter')
-        Window.WINDOW.geometry(str(Window.WIDTH)+"x"+str(Window.HEIGHT))
+        Window.page.title = 'Sprite Sheet Splitter'
+        Window.page.window_width = Window.WIDTH
+        Window.page.window_height = Window.HEIGHT
+        Window.page.vertical_alignment = ft.MainAxisAlignment.CENTER
+        Window.page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
+        # theme button to toggle screen theme
+        Window.theme_button = ft.IconButton(
+            icon=ft.icons.LIGHT_MODE,
+            on_click=lambda e: Window.change_theme()
+        )
+
+        Window.image = ft.Image(
+            src=f"placeholder.png",
+            width=1000,
+            height=700,
+            border_radius=10,
+            fit=ft.ImageFit.CONTAIN
+        )
+
+        Window.row_field = ft.TextField(label="Rows", width=300)
+        Window.column_field = ft.TextField(label="Columns", width=300)
+        Window.left_margin_field = ft.TextField(label="Margin left", value="0", width=300)
+        Window.right_margin_field = ft.TextField(label="Margin Right", value="0", width=300)
+        Window.top_margin_field = ft.TextField(label="Margin Top", value="0", width=300)
+        Window.bottom_margin_field = ft.TextField(label="Margin Bottom", value="0", width=300)
+        Window.import_button = ft.ElevatedButton(text="Import an image", icon="upload", width=300, height=50)
+        Window.cut_button = ft.ElevatedButton(text="Cut your image", icon="cut", width=300, height=50)
+
+        Window.image_container = ft.Container(
+            content=Window.image,
+        )
+
+        Window.content_container = ft.Row([
+            Window.image_container,
+        ],
+            alignment=ft.MainAxisAlignment.CENTER
+        )
+
+        Window.form_container = ft.Row([
+            ft.Column([
+                    Window.import_button,
+                    Window.row_field,
+                    Window.column_field,
+                    Window.left_margin_field,
+                    Window.right_margin_field,
+                    Window.top_margin_field,
+                    Window.bottom_margin_field,
+                    Window.cut_button
+                ],
+                    alignment=ft.MainAxisAlignment.CENTER
+                ),
+            ],
+            alignment=ft.MainAxisAlignment.CENTER
+        )
+
+        # The main container is here to show all components
+        Window.main_container = ft.Container(
+            content=ft.Row([
+                    Window.theme_button,
+                    Window.image_container,
+                    Window.form_container
+                ],
+                spacing=75,
+                alignment=ft.MainAxisAlignment.CENTER
+            )
+        )
+        Window.page.add(Window.main_container)
+        Window.page.update()
+
+        """
         zero = tkinter.StringVar()
         zero.set('0')
 
@@ -358,3 +452,10 @@ class Window(Singleton):
         Window.name_field.place(x=1370, y=560)
         Window.cut_button.place(x=1300, y=620)
         Window.WINDOW.mainloop()
+    """
+
+
+def main(page: ft.Page):
+    Window.page = page
+    Window.init_window()
+    Window.page.update()
