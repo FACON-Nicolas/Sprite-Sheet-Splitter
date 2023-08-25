@@ -1,11 +1,7 @@
 from __future__ import annotations
-import tkinter
-import os
-from tkinter import filedialog
 import PIL.Image
 from ImageSplitter import ImageSplitterDecorator
 from ImageSaveComposite import ImageSaveComposite
-from PathImageOS import PathImageOSManager
 import traceback
 
 import flet as ft
@@ -82,7 +78,7 @@ class Window(Singleton):
     form_container: ft.Row
     image: ft.Image
     file_picker: ft.FilePicker
-    path_image: PathImageOSManager = PathImageOSManager()
+    dir_picker: ft.FilePicker
 
     splitter: ImageSplitterDecorator = None
     page: ft.Page = None
@@ -122,9 +118,9 @@ class Window(Singleton):
         """
 
         try:
-            path: str = Window.path_image.get_path(e)
-            if path:
-                Window.open_image(Window.path_image.get_path(e))
+            if e.files and len(e.files):
+                Window.filename = e.files[0].path
+                Window.open_image(Window.filename)
         except FileNotFoundError:
             print(traceback.format_exc())
         except AttributeError:
@@ -179,7 +175,7 @@ class Window(Singleton):
             print(traceback.format_exc())
 
     @staticmethod
-    def save() -> None:
+    def save(e: ft.FilePickerResultEvent) -> None:
         """
 
         cut image, and save it as asked by player.
@@ -191,19 +187,21 @@ class Window(Singleton):
         :rtype: None
 
         """
-        path = filedialog.askdirectory()
-        try:
-            images = Window.cut_image()
-            img_type = Window.filename.split('.')[-1]
-            composite = ImageSaveComposite.from_images_to_composite(
-                images,
-                path,
-                Window.name_field.get(),
-                img_type
-            )
-            composite.save()
-        except FileNotFoundError:
-            pass
+        if e.path:
+            try:
+                images = Window.cut_image()
+                img_type = Window.filename.split('.')[-1]
+                composite = ImageSaveComposite.from_images_to_composite(
+                    images,
+                    e.path,
+                    Window.name_field.value,
+                    img_type
+                )
+                composite.save()
+            except FileNotFoundError:
+                pass
+        else:
+            print('test')
 
     @staticmethod
     def change_theme():
@@ -238,6 +236,10 @@ class Window(Singleton):
             on_result=Window.browse_file,
         )
 
+        Window.dir_picker = ft.FilePicker(
+            on_result=Window.save,
+        )
+
         Window.file_picker.allowed_extensions = ["png", "jpg", "jpeg"]
 
         # theme button to toggle screen theme
@@ -260,7 +262,14 @@ class Window(Singleton):
         Window.right_margin_field = ft.TextField(label="Margin Right", value="0", width=300)
         Window.top_margin_field = ft.TextField(label="Margin Top", value="0", width=300)
         Window.bottom_margin_field = ft.TextField(label="Margin Bottom", value="0", width=300)
-        Window.cut_button = ft.ElevatedButton(text="Cut your image", icon="cut", width=300, height=50)
+        Window.name_field = ft.TextField(label="Name", width=300)
+        Window.cut_button = ft.ElevatedButton(
+            text="Cut your image",
+            icon="cut",
+            width=300,
+            height=50,
+            on_click=lambda _: Window.dir_picker.save_file()
+        )
 
         Window.import_button = ft.ElevatedButton(
             text="Import an image",
@@ -289,6 +298,7 @@ class Window(Singleton):
                 Window.right_margin_field,
                 Window.top_margin_field,
                 Window.bottom_margin_field,
+                Window.name_field,
                 Window.cut_button,
             ],
                 alignment=ft.MainAxisAlignment.CENTER
@@ -310,6 +320,7 @@ class Window(Singleton):
         )
         Window.page.add(Window.main_container)
         Window.page.overlay.append(Window.file_picker)
+        Window.page.overlay.append(Window.dir_picker)
         Window.page.update()
 
 
