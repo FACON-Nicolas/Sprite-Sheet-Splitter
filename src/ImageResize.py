@@ -1,6 +1,8 @@
 from PIL import Image, ImageTk
+from deprecated import deprecated
 
 
+@deprecated(version="2.0.0", reason="Used when the windows was developed with Tkinter")
 class ImageResizeDecorator:
     """
 
@@ -15,7 +17,7 @@ class ImageResizeDecorator:
 
     new_img = None
 
-    def __init__(self, width: int, height: int,  decore: str) -> None:
+    def __init__(self, width: int, height: int, decore: str) -> None:
         """
 
         ImageResizeDecorator class constructor, this method take as argument
@@ -38,7 +40,6 @@ class ImageResizeDecorator:
         self.decore = decore
         self.strategy = None
         self.init_strategy()
-        self.resize_as_img_tk()
 
     def get_ratio(self) -> float:
         """
@@ -98,6 +99,7 @@ class ImageResizeDecorator:
             self.strategy = ImageSizeStrategyHorizontal(self)
 
 
+@deprecated(version="2.0.0", reason="Used when the windows was developed with Tkinter")
 class ImageSizeStrategy:
     """
 
@@ -110,6 +112,7 @@ class ImageSizeStrategy:
     The strategy common operation is get_size().
 
     """
+
     def __init__(self, img: ImageResizeDecorator) -> None:
         """
 
@@ -119,6 +122,7 @@ class ImageSizeStrategy:
         self.img = img
 
 
+@deprecated(version="2.0.0", reason="Used when the windows was developed with Tkinter")
 class ImageSizeStrategyHorizontal(ImageSizeStrategy):
 
     def __init__(self, img) -> None:
@@ -139,10 +143,11 @@ class ImageSizeStrategyHorizontal(ImageSizeStrategy):
 
         """
         width = self.img.width
-        height = int(self.img.width//self.img.get_ratio())
+        height = int(self.img.width // self.img.get_ratio())
         return width, height
 
 
+@deprecated(version="2.0.0", reason="Used when the windows was developed with Tkinter")
 class ImageSizeStrategyVertical(ImageSizeStrategy):
 
     def __init__(self, img) -> None:
@@ -167,6 +172,7 @@ class ImageSizeStrategyVertical(ImageSizeStrategy):
         return width, height
 
 
+@deprecated(version="2.0.0", reason="Used when the windows was developed with Tkinter")
 class ImageSizeStrategySquare(ImageSizeStrategy):
 
     def __init__(self, img) -> None:
