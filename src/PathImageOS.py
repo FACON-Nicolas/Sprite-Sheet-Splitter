@@ -1,3 +1,4 @@
+from __future__ import annotations
 import flet as ft
 import platform
 
@@ -16,7 +17,7 @@ class PathImageOSManager:
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
 
         Constructor for the PathImageOSManager, used to initialize
@@ -31,7 +32,7 @@ class PathImageOSManager:
         else:
             self.pathImage = PathImageOS()
 
-    def get_path(self, event: ft.FilePickerResultEvent):
+    def get_path(self, event: ft.FilePickerResultEvent) -> str | None:
         """
 
         The method to get the path of the file loaded, it uses the
@@ -49,7 +50,7 @@ class PathImageOS:
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
 
         PathImageOS's constructor method, init filename as empty str.
@@ -57,7 +58,7 @@ class PathImageOS:
         """
         self.filename: str = ""
 
-    def get_path(self, event: ft.FilePickerResultEvent):
+    def get_path(self, event: ft.FilePickerResultEvent) -> str | None:
         """
 
         The method to get the path of the file loaded, it checks
@@ -78,7 +79,7 @@ class PathImageMacOS(PathImageOS):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """
 
         PathImageMacOS's constructor method, calls super init method.
@@ -86,7 +87,7 @@ class PathImageMacOS(PathImageOS):
         """
         super().__init__()
 
-    def get_path(self, event: ft.FilePickerResultEvent):
+    def get_path(self, event: ft.FilePickerResultEvent) -> str | None:
         """
 
         The method to get the path of the file loaded, it checks
@@ -97,4 +98,4 @@ class PathImageMacOS(PathImageOS):
         """
         if event.files and len(event.files):
             self.filename = event.files[0].path.split('HD')[1]
-        return self.filename
+            return self.filename
