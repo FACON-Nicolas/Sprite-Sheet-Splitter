@@ -37,6 +37,11 @@ This project uses many design patterns:
 
 ```shell
 git clone https://github.com/FACON-Nicolas/sprite-sheet-splitter
+python3 -m pip install flet
+python3 -m pip install pillow
+python3 -m pip install deprecated
+python3 -m pip install numpy
+python3 -m pip install numpy
 ```
 
 ```shell
@@ -47,4 +52,6 @@ python3 src/Main.py
 # Version
 
 * **1.0.0**: First Version, developed in November 2022
+
+* **2.0.0**: Second Version, migrate window from Tkinter to Flet, developed in August 2023
 
