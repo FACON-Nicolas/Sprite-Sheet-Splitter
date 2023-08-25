@@ -3,9 +3,9 @@ import tkinter
 import os
 from tkinter import filedialog
 import PIL.Image
-from ImageResize import ImageResizeDecorator
 from ImageSplitter import ImageSplitterDecorator
 from ImageSaveComposite import ImageSaveComposite
+from PathImageOS import PathImageOSManager
 import traceback
 
 import flet as ft
@@ -45,7 +45,7 @@ class Singleton:
 
 class Window(Singleton):
     """
-    
+
     Window class used to create a window in Python for a Sprite Sheet Splitter.
 
     This class is a subclass from Singleton class, the Singleton
@@ -57,48 +57,39 @@ class Window(Singleton):
 
     WIDTH = 1600
     HEIGHT = 900
-    WINDOW = tkinter.Tk()
 
-    label = None
-    import_button = None
-    filename: str = None
-    picture_label = None
+    label: ft.Text
+    import_button: ft.ElevatedButton
+    filename: str
 
-    row_field = None
-    column_field = None
+    row_field: ft.TextField
+    column_field: ft.TextField
 
-    row_label = None
-    column_label = None
+    left_margin_field: ft.TextField
+    right_margin_field: ft.TextField
+    top_margin_field: ft.TextField
+    bottom_margin_field: ft.TextField
 
-    left_margin_field = None
-    right_margin_field = None
-    top_margin_field = None
-    bottom_margin_field = None
+    name_field: ft.TextField = None
 
-    left_margin_label = None
-    right_margin_label = None
-    top_margin_label = None
-    bottom_margin_label = None
-
-    name_label = None
-    name_field = None
-
-    cut_button = None
-    save_button = None
-    theme_button: ft.IconButton = None
+    cut_button: ft.ElevatedButton
+    save_button: ft.ElevatedButton
+    theme_button: ft.IconButton
     isLight: bool = False
     main_container: ft.Container
     content_container: ft.Row
     image_container: ft.Container
     form_container: ft.Row
     image: ft.Image
+    file_picker: ft.FilePicker
+    path_image: PathImageOSManager = PathImageOSManager()
 
     splitter: ImageSplitterDecorator = None
     page: ft.Page = None
 
     def __new__(cls, *args, **kwargs) -> object:
         """
-        
+
         __new__() method for Window class.
 
         This method is called at each new call for an instance creation,
@@ -116,43 +107,33 @@ class Window(Singleton):
         return instance
 
     @staticmethod
-    def browse_file() -> None:
+    def browse_file(e: ft.FilePickerResultEvent) -> None:
         """
-        
+
         browse a file in your file explorer.
 
         This method calls filedialog from Tkinter to get access to
         your explorer file, by this access it's possible to choose an
         image file (PNG, JPG, JPEG) and the file's absolute path is
-        returned at the end of the function. 
+        returned at the end of the function.
 
         :rtype: str | None
-        
+
         """
-        filename = filedialog.askopenfile(
-            initialdir=os.path.expanduser("~"),
-            title="Select an image",
-            filetypes=(
-                ("PNG", "*.png"),
-                ("JPEG", "*.jpeg"),
-                ("JPG", "*.jpg")
-            )
-        )
 
         try:
-            Window.label.configure(text="File Opened: " + filename.name)
-            Window.label.pack()
-            Window.filename = filename.name
-            Window.open_image()
+            path: str = Window.path_image.get_path(e)
+            if path:
+                Window.open_image(Window.path_image.get_path(e))
         except FileNotFoundError:
-            pass
+            print(traceback.format_exc())
         except AttributeError:
-            pass
+            print(traceback.format_exc())
         except ValueError:
-            pass
+            print(traceback.format_exc())
 
     @staticmethod
-    def open_image() -> None:
+    def open_image(filename: str) -> None:
         """
 
         Open an image from a file name.
@@ -164,17 +145,9 @@ class Window(Singleton):
         :rtype: None
 
         """
-        decorator = ImageResizeDecorator(1000, 600, Window.filename)
-
-        Window.picture_label = tkinter.Label(
-            Window.WINDOW,
-            width=1000,
-            height=600,
-            image=decorator.new_img
-        )
-
-        Window.picture_label.image = decorator.new_img
-        Window.picture_label.place(x=100, y=100)
+        Window.filename = filename
+        Window.image.src = filename
+        Window.page.update()
 
     @staticmethod
     def cut_image() -> list | None:
@@ -193,12 +166,12 @@ class Window(Singleton):
         try:
             Window.splitter = ImageSplitterDecorator(
                 PIL.Image.open(Window.filename),
-                int(Window.row_field.get()),
-                int(Window.column_field.get()),
-                int(Window.left_margin_field.get()),
-                int(Window.right_margin_field.get()),
-                int(Window.top_margin_field.get()),
-                int(Window.bottom_margin_field.get())
+                int(Window.row_field.value),
+                int(Window.column_field.value),
+                int(Window.left_margin_field.value),
+                int(Window.right_margin_field.value),
+                int(Window.top_margin_field.value),
+                int(Window.bottom_margin_field.value)
             )
 
             return Window.splitter.split()
@@ -261,6 +234,12 @@ class Window(Singleton):
         Window.page.vertical_alignment = ft.MainAxisAlignment.CENTER
         Window.page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
+        Window.file_picker = ft.FilePicker(
+            on_result=Window.browse_file,
+        )
+
+        Window.file_picker.allowed_extensions = ["png", "jpg", "jpeg"]
+
         # theme button to toggle screen theme
         Window.theme_button = ft.IconButton(
             icon=ft.icons.LIGHT_MODE,
@@ -281,8 +260,15 @@ class Window(Singleton):
         Window.right_margin_field = ft.TextField(label="Margin Right", value="0", width=300)
         Window.top_margin_field = ft.TextField(label="Margin Top", value="0", width=300)
         Window.bottom_margin_field = ft.TextField(label="Margin Bottom", value="0", width=300)
-        Window.import_button = ft.ElevatedButton(text="Import an image", icon="upload", width=300, height=50)
         Window.cut_button = ft.ElevatedButton(text="Cut your image", icon="cut", width=300, height=50)
+
+        Window.import_button = ft.ElevatedButton(
+            text="Import an image",
+            icon="upload",
+            width=300,
+            height=50,
+            on_click=lambda _: Window.file_picker.pick_files()
+        )
 
         Window.image_container = ft.Container(
             content=Window.image,
@@ -296,163 +282,35 @@ class Window(Singleton):
 
         Window.form_container = ft.Row([
             ft.Column([
-                    Window.import_button,
-                    Window.row_field,
-                    Window.column_field,
-                    Window.left_margin_field,
-                    Window.right_margin_field,
-                    Window.top_margin_field,
-                    Window.bottom_margin_field,
-                    Window.cut_button
-                ],
-                    alignment=ft.MainAxisAlignment.CENTER
-                ),
+                Window.import_button,
+                Window.row_field,
+                Window.column_field,
+                Window.left_margin_field,
+                Window.right_margin_field,
+                Window.top_margin_field,
+                Window.bottom_margin_field,
+                Window.cut_button,
             ],
+                alignment=ft.MainAxisAlignment.CENTER
+            ),
+        ],
             alignment=ft.MainAxisAlignment.CENTER
         )
 
         # The main container is here to show all components
         Window.main_container = ft.Container(
             content=ft.Row([
-                    Window.theme_button,
-                    Window.image_container,
-                    Window.form_container
-                ],
+                Window.theme_button,
+                Window.image_container,
+                Window.form_container
+            ],
                 spacing=75,
                 alignment=ft.MainAxisAlignment.CENTER
             )
         )
         Window.page.add(Window.main_container)
+        Window.page.overlay.append(Window.file_picker)
         Window.page.update()
-
-        """
-        zero = tkinter.StringVar()
-        zero.set('0')
-
-        Window.label = tkinter.Label(
-            Window.WINDOW,
-            width=100,
-            height=4,
-            fg='blue'
-        )
-
-        Window.import_button = tkinter.Button(
-            Window.WINDOW,
-            width=30,
-            height=4,
-            text="Select a file",
-            command=Window.browse_file,
-            background="red"
-        )
-
-        Window.row_field = tkinter.Entry(
-            Window.WINDOW,
-            width=23
-        )
-
-        Window.column_field = tkinter.Entry(
-            Window.WINDOW,
-            width=23
-        )
-
-        Window.left_margin_field = tkinter.Entry(
-            Window.WINDOW,
-            width=23,
-            textvariable=zero
-        )
-
-        Window.right_margin_field = tkinter.Entry(
-            Window.WINDOW,
-            width=23,
-            textvariable=zero
-        )
-
-        Window.top_margin_field = tkinter.Entry(
-            Window.WINDOW,
-            width=23,
-            textvariable=zero
-        )
-
-        Window.bottom_margin_field = tkinter.Entry(
-            Window.WINDOW,
-            width=23,
-            textvariable=zero
-        )
-
-        Window.row_label = tkinter.Label(
-            Window.WINDOW,
-            width=10,
-            text='row'
-        )
-
-        Window.column_label = tkinter.Label(
-            Window.WINDOW,
-            width=10,
-            text='column'
-        )
-
-        Window.left_margin_label = tkinter.Label(
-            Window.WINDOW,
-            width=10,
-            text="left"
-        )
-
-        Window.right_margin_label = tkinter.Label(
-            Window.WINDOW,
-            width=10,
-            text="right"
-        )
-
-        Window.top_margin_label = tkinter.Label(
-            Window.WINDOW,
-            width=10,
-            text="top"
-        )
-
-        Window.bottom_margin_label = tkinter.Label(
-            Window.WINDOW,
-            width=10,
-            text="bottom"
-        )
-
-        Window.name_field = tkinter.Entry(
-            Window.WINDOW,
-            width=23,
-        )
-
-        Window.name_label = tkinter.Label(
-            Window.WINDOW,
-            width=10,
-            text="name"
-        )
-
-        Window.cut_button = tkinter.Button(
-            Window.WINDOW,
-            width=30,
-            height=4,
-            text="cut image",
-            command=Window.save,
-            background="green"
-        )
-
-        Window.import_button.place(x=1300, y=100)
-        Window.row_label.place(x=1300, y=200)
-        Window.row_field.place(x=1370, y=200)
-        Window.column_label.place(x=1300, y=260)
-        Window.column_field.place(x=1370, y=260)
-        Window.left_margin_label.place(x=1300, y=320)
-        Window.left_margin_field.place(x=1370, y=320)
-        Window.right_margin_label.place(x=1300, y=380)
-        Window.right_margin_field.place(x=1370, y=380)
-        Window.top_margin_label.place(x=1300, y=440)
-        Window.top_margin_field.place(x=1370, y=440)
-        Window.bottom_margin_label.place(x=1300, y=500)
-        Window.bottom_margin_field.place(x=1370, y=500)
-        Window.name_label.place(x=1300, y=560)
-        Window.name_field.place(x=1370, y=560)
-        Window.cut_button.place(x=1300, y=620)
-        Window.WINDOW.mainloop()
-    """
 
 
 def main(page: ft.Page):
