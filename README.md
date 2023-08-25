@@ -3,7 +3,7 @@
 This repository contains the source code of a sprite sheet splitter.
 This sprite sheet splitter can split a sprite sheet with `N` rows and `N` columns.
 
-![](https://i.ibb.co/VN7jDtb/sprite-sheet.png)
+![](https://i.ibb.co/yBpMCzG/Screenshot-2023-08-25-at-22-02-17.png)
 
 # Summary
 
