@@ -3,8 +3,16 @@ import PIL.Image
 from ImageSplitter import ImageSplitterDecorator
 from ImageSaveComposite import ImageSaveComposite
 import traceback
-
 import flet as ft
+import logging
+
+
+logging.basicConfig(filename="window.log",
+                    format='[%(levelname)s] %(message)s',
+                    filemode='w')
+
+logger = logging.getLogger('window')
+logger.setLevel(logging.DEBUG)
 
 
 class Singleton:
@@ -99,7 +107,6 @@ class Window(Singleton):
 
         """
         instance = super().__new__(cls, *args, **kwargs)
-        cls.init_window()
         return instance
 
     @staticmethod
@@ -141,9 +148,12 @@ class Window(Singleton):
         :rtype: None
 
         """
+        logger.info("start open image")
         Window.filename = filename
+        logger.debug("filename is " + filename)
         Window.image.src = filename
         Window.page.update()
+        logger.debug("end open image")
 
     @staticmethod
     def cut_image() -> list | None:
@@ -159,6 +169,7 @@ class Window(Singleton):
         :rtype: None
 
         """
+        logger.info("start cutting image")
         try:
             Window.splitter = ImageSplitterDecorator(
                 PIL.Image.open(Window.filename),
@@ -172,7 +183,10 @@ class Window(Singleton):
 
             return Window.splitter.split()
         except ValueError:
+            logger.error("cut image function gives errors")
             print(traceback.format_exc())
+        finally:
+            logger.info("end cutting image")
 
     @staticmethod
     def save(e: ft.FilePickerResultEvent) -> None:
@@ -187,7 +201,10 @@ class Window(Singleton):
         :rtype: None
 
         """
+        logger.info("start saving image")
+
         if e.path:
+            logger.debug("found a path")
             try:
                 images = Window.cut_image()
                 img_type = Window.filename.split('.')[-1]
@@ -200,11 +217,11 @@ class Window(Singleton):
                 composite.save()
             except FileNotFoundError:
                 pass
-        else:
-            print('test')
+        logger.info("end saving image")
 
     @staticmethod
     def change_theme():
+        logger.info("Change window theme")
         Window.isLight = not Window.isLight
         if Window.isLight:
             Window.page.theme_mode = ft.ThemeMode.LIGHT
@@ -213,6 +230,7 @@ class Window(Singleton):
             Window.page.theme_mode = ft.ThemeMode.DARK
             Window.theme_button.icon = ft.icons.LIGHT_MODE
         Window.page.update()
+        logger.info("Window theme is changed")
 
     @staticmethod
     def init_window() -> None:
@@ -227,26 +245,34 @@ class Window(Singleton):
 
         """
         Window.page.title = 'Sprite Sheet Splitter'
+        logger.debug("title is changed")
         Window.page.window_width = Window.WIDTH
+        logger.debug("width is changed")
         Window.page.window_height = Window.HEIGHT
+        logger.debug("height is changed")
         Window.page.vertical_alignment = ft.MainAxisAlignment.CENTER
+        logger.debug("horizontal position is changed")
         Window.page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
         Window.file_picker = ft.FilePicker(
             on_result=Window.browse_file,
         )
+        logger.debug("initialization of file picker")
 
         Window.dir_picker = ft.FilePicker(
             on_result=Window.save,
         )
+        logger.debug("initialization of directory picker")
 
         Window.file_picker.allowed_extensions = ["png", "jpg", "jpeg"]
+        logger.debug("initialization of allowed files")
 
         # theme button to toggle screen theme
         Window.theme_button = ft.IconButton(
             icon=ft.icons.LIGHT_MODE,
             on_click=lambda e: Window.change_theme()
         )
+        logger.debug("initialization of theme button")
 
         Window.image = ft.Image(
             src=f"placeholder.png",
@@ -255,14 +281,22 @@ class Window(Singleton):
             border_radius=10,
             fit=ft.ImageFit.CONTAIN
         )
+        logger.debug("initialization of main image")
 
         Window.row_field = ft.TextField(label="Rows", width=300)
+        logger.debug("initialization of row field")
         Window.column_field = ft.TextField(label="Columns", width=300)
+        logger.debug("initialization of column field")
         Window.left_margin_field = ft.TextField(label="Margin left", value="0", width=300)
+        logger.debug("initialization of margin left field")
         Window.right_margin_field = ft.TextField(label="Margin Right", value="0", width=300)
+        logger.debug("initialization of right field")
         Window.top_margin_field = ft.TextField(label="Margin Top", value="0", width=300)
+        logger.debug("initialization of top field")
         Window.bottom_margin_field = ft.TextField(label="Margin Bottom", value="0", width=300)
+        logger.debug("initialization of bottom field")
         Window.name_field = ft.TextField(label="Name", width=300)
+        logger.debug("initialization of name field")
         Window.cut_button = ft.ElevatedButton(
             text="Cut your image",
             icon="cut",
@@ -270,6 +304,7 @@ class Window(Singleton):
             height=50,
             on_click=lambda _: Window.dir_picker.save_file()
         )
+        logger.debug("initialization of cut button")
 
         Window.import_button = ft.ElevatedButton(
             text="Import an image",
@@ -278,16 +313,19 @@ class Window(Singleton):
             height=50,
             on_click=lambda _: Window.file_picker.pick_files()
         )
+        logger.debug("initialization of import button")
 
         Window.image_container = ft.Container(
             content=Window.image,
         )
+        logger.debug("initialization of image container")
 
         Window.content_container = ft.Row([
             Window.image_container,
         ],
             alignment=ft.MainAxisAlignment.CENTER
         )
+        logger.debug("initialization of content container")
 
         Window.form_container = ft.Row([
             ft.Column([
@@ -306,6 +344,7 @@ class Window(Singleton):
         ],
             alignment=ft.MainAxisAlignment.CENTER
         )
+        logger.debug("initialization of form container")
 
         # The main container is here to show all components
         Window.main_container = ft.Container(
@@ -318,13 +357,20 @@ class Window(Singleton):
                 alignment=ft.MainAxisAlignment.CENTER
             )
         )
+        logger.debug("initialization of main container")
         Window.page.add(Window.main_container)
+        logger.debug("add all content in window")
         Window.page.overlay.append(Window.file_picker)
+        logger.debug("add file picker")
         Window.page.overlay.append(Window.dir_picker)
+        logger.debug("add directory picker")
         Window.page.update()
+        logger.debug("update the window")
 
 
 def main(page: ft.Page):
     Window.page = page
+    logger.info("Start creating window")
     Window.init_window()
+    logger.info("End creating window")
     Window.page.update()

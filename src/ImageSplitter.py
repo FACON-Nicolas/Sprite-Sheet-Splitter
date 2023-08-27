@@ -1,5 +1,15 @@
 from PIL import Image
 import numpy as np
+from deprecated import deprecated
+import logging
+
+
+logging.basicConfig(filename="window.log",
+                    format='[%(levelname)s] %(message)s',
+                    filemode='w')
+
+logger = logging.getLogger('splitter')
+logger.setLevel(logging.DEBUG)
 
 
 class ImageSplitterDecorator:
@@ -46,6 +56,7 @@ class ImageSplitterDecorator:
 
         """
 
+        logger.info("init a splitter")
         if rows == 0 or columns == 0:
             raise ValueError(f"row or column cannot be equals to 0, (row, col)=({rows}, {columns})")
         self.decore = decore
@@ -56,6 +67,7 @@ class ImageSplitterDecorator:
         self.top = top
         self.bottom = bottom
         self.strategy = SplitterAutoStrategy(self.rows, self.columns)
+        logger.info("init a splitter ends correctly")
 
     def choose_strategy(self) -> object:
         """
@@ -66,8 +78,11 @@ class ImageSplitterDecorator:
         otherwise the SplitterStrategy is chosen to do the same task.
 
         """
+        logger.info("choose a strategy")
         if not (self.left == self.right == self.top == self.bottom == 0):
+            logger.info("auto cut strategy")
             return SplitterStrategy(self.rows, self.columns, self.left, self.right, self.top, self.bottom)
+        logger.info("manual cut strategy")
         return SplitterAutoStrategy(self.rows, self.columns)
 
     def split(self) -> list[Image]:
@@ -83,8 +98,15 @@ class ImageSplitterDecorator:
         :rtype: list[PIL.Image]
 
         """
-        return self.strategy.split(self.decore)
+        logger.info("split the image")
+        split = self.strategy.split(self.decore)
+        logger.info("end of split")
+        return split
 
+    @deprecated(
+        version="2.0.0",
+        reason="not useless anymore since we use flet instead of tkinter"
+    )
     def resize(self) -> np.array:
         """
 
@@ -138,7 +160,7 @@ class SplitterStrategy:
         self.right = right
         self.bottom = bottom
 
-    def resize(self, image: ImageSplitterDecorator) -> np.array:
+    def resize(self, image: Image) -> np.array:
         """
 
         resize the image thanks to the margin given as argument in
@@ -215,7 +237,9 @@ class SplitterAutoStrategy(SplitterStrategy):
         :type rows: int
         :type columns: int
         """
+        logger.info("init super auto")
         super().__init__(rows, columns)
+        logger.info("end of init super auto")
 
     def split(self, image: ImageSplitterDecorator) -> list[Image]:
         """
@@ -230,12 +254,14 @@ class SplitterAutoStrategy(SplitterStrategy):
         :rtype: list[PIL.Image]
 
         """
+        logger.info("start split in splitter auto")
         pictures = super(SplitterAutoStrategy, self).split(image)
         pics = []
         for img in pictures:
             img = np.array(img)
             img = SplitterAutoStrategy.cut(img)
             pics.append(Image.fromarray(img))
+        logger.info("end split in splitter auto")
         return pics
 
     @staticmethod
@@ -251,10 +277,12 @@ class SplitterAutoStrategy(SplitterStrategy):
         :rtype: np.array
 
         """
+        logger.info("start cut in splitter auto")
         image = SplitterAutoStrategy.cut_top(image)
         image = SplitterAutoStrategy.cut_bottom(image)
         image = SplitterAutoStrategy.cut_left(image)
         image = SplitterAutoStrategy.cut_right(image)
+        logger.info("end cut in splitter auto")
         return np.array(image)
 
     @staticmethod
@@ -274,10 +302,13 @@ class SplitterAutoStrategy(SplitterStrategy):
         :rtype: boolean
 
         """
+        logger.info("start check all columns")
         value = image[0].tolist()[index]
         for i in range(1, len(image)):
             if image[i].tolist()[index] != value:
+                logger.info("They are not all identical")
                 return False
+        logger.info("They are all identical")
         return True
 
     @staticmethod
@@ -296,9 +327,11 @@ class SplitterAutoStrategy(SplitterStrategy):
         :rtype: np.array
 
         """
+        logger.info("Start cut top")
         limit = 0
         while limit < len(image) and np.all(image[limit]):
             limit += 1
+        logger.info("end cut top, vertical length = " + str(len(image) - limit))
         return image[limit:]
 
     @staticmethod
@@ -317,9 +350,11 @@ class SplitterAutoStrategy(SplitterStrategy):
         :rtype: np.array
 
         """
+        logger.info("Start cut bottom")
         limit = len(image)-1
         while limit >= 0 and np.all(image[limit]):
             limit -= 1
+        logger.info("end cut bottom, vertical length = " + str(len(image) - limit - 1))
         return image[:limit]
 
     @staticmethod
@@ -338,9 +373,11 @@ class SplitterAutoStrategy(SplitterStrategy):
         :rtype: np.array
 
         """
+        logger.info("Start cut left")
         limit = 0
         while limit < len(image[0]) and SplitterAutoStrategy.column_all(image, limit):
             limit += 1
+        logger.info("end cut left, length = " + str(len(image[0]) - limit))
         return [line[limit:] for line in image]
 
     @staticmethod
@@ -359,7 +396,9 @@ class SplitterAutoStrategy(SplitterStrategy):
         :rtype: np.array
 
         """
+        logger.info("Start cut right")
         limit = len(image[0])-1
         while limit >= 0 and SplitterAutoStrategy.column_all(image, limit):
             limit -= 1
+        logger.info("end cut right, length = " + str(len(image[0]) - limit - 1))
         return [line[:limit] for line in image]

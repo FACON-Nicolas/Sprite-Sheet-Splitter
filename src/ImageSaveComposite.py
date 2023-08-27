@@ -1,5 +1,14 @@
 from PIL import Image
 import os
+import logging
+import traceback
+
+logging.basicConfig(filename="window.log",
+                    format='[%(levelname)s] %(message)s',
+                    filemode='w')
+
+logger = logging.getLogger('saver')
+logger.setLevel(logging.DEBUG)
 
 
 class ImageSaveComposite:
@@ -23,6 +32,7 @@ class ImageSaveComposite:
         :rtype: None
 
         """
+        logger.info("init image saver")
         self.images = []
         self.path = path + '/'
         self.name = name
@@ -40,11 +50,13 @@ class ImageSaveComposite:
         :rtype: None
 
         """
+        logger.info("start save recursively")
         if not os.path.exists(self.path):
             os.mkdir(self.path)
         for i in range(len(self.images)):
             name = self.path + self.name + str(i) + '.' + self.type
             self.images[i].save(name)
+        logger.info("end save recursively")
 
     def append(self, image: Image) -> None:
         """
@@ -58,6 +70,7 @@ class ImageSaveComposite:
         :rtype: None
 
         """
+        logger.info("add an image")
         self.images.append(image)
 
     def remove(self, image: Image) -> None:
@@ -74,10 +87,13 @@ class ImageSaveComposite:
         :rtype: None
 
         """
+        logger.info("remove an image")
         try:
             self.images.remove(image)
+            logger.info("remove an image successfully")
         except ValueError:
-            pass
+            logger.error("remove an image with errors")
+            print(traceback.format_exc())
 
     @staticmethod
     def from_images_to_composite(images: list[Image], path: str, name: str, type_img: str) -> object:
@@ -92,6 +108,8 @@ class ImageSaveComposite:
         :rtype: None
 
         """
+        logger.info("init saver with images")
         composite = ImageSaveComposite(path, name, type_img)
         composite.images = images
+        logger.info("end init saver with images")
         return composite
