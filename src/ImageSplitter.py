@@ -241,7 +241,7 @@ class SplitterAutoStrategy(SplitterStrategy):
         super().__init__(rows, columns)
         logger.info("end of init super auto")
 
-    def split(self, image: ImageSplitterDecorator) -> list[Image]:
+    def split(self, image: ImageSplitterDecorator):
         """
 
         get the current image as array and split it.
