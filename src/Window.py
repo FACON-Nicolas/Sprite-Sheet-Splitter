@@ -29,7 +29,7 @@ class Singleton:
 
     __instance = None
 
-    def __new__(cls, *args, **kwargs) -> object:
+    def __new__(cls, *args, **kwargs):
         """
 
         __new__() method for Window class.
@@ -91,7 +91,7 @@ class Window(Singleton):
     splitter: ImageSplitterDecorator = None
     page: ft.Page = None
 
-    def __new__(cls, *args, **kwargs) -> object:
+    def __new__(cls, *args, **kwargs):
         """
 
         __new__() method for Window class.
@@ -156,7 +156,7 @@ class Window(Singleton):
         logger.debug("end open image")
 
     @staticmethod
-    def cut_image() -> list | None:
+    def cut_image():
         """
 
         get the current image and call the methods to split it.

@@ -58,7 +58,7 @@ class ImageSaveComposite:
             self.images[i].save(name)
         logger.info("end save recursively")
 
-    def append(self, image: Image) -> None:
+    def append(self, image) -> None:
         """
 
         add image in composite.
@@ -73,7 +73,7 @@ class ImageSaveComposite:
         logger.info("add an image")
         self.images.append(image)
 
-    def remove(self, image: Image) -> None:
+    def remove(self, image) -> None:
         """
 
         add image in composite.
@@ -96,7 +96,7 @@ class ImageSaveComposite:
             print(traceback.format_exc())
 
     @staticmethod
-    def from_images_to_composite(images: list[Image], path: str, name: str, type_img: str) -> object:
+    def from_images_to_composite(images, path: str, name: str, type_img: str):
         """
 
         construct a composite from a list[Image], a path, a name and an image type.

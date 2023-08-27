@@ -85,7 +85,7 @@ class ImageSplitterDecorator:
         logger.info("manual cut strategy")
         return SplitterAutoStrategy(self.rows, self.columns)
 
-    def split(self) -> list[Image]:
+    def split(self):
         """
 
         get the current image as array, resizes by and splits it.
@@ -107,7 +107,7 @@ class ImageSplitterDecorator:
         version="2.0.0",
         reason="not useless anymore since we use flet instead of tkinter"
     )
-    def resize(self) -> np.array:
+    def resize(self):
         """
 
         resize the image and returns it as array.
@@ -160,7 +160,7 @@ class SplitterStrategy:
         self.right = right
         self.bottom = bottom
 
-    def resize(self, image: Image) -> np.array:
+    def resize(self, image):
         """
 
         resize the image thanks to the margin given as argument in
@@ -189,7 +189,7 @@ class SplitterStrategy:
             array = array[:len(array) - self.bottom]
         return array
 
-    def split(self, image: ImageSplitterDecorator) -> list[Image]:
+    def split(self, image: ImageSplitterDecorator):
         """
 
         get the current image as array, resized by margin and split it.
@@ -265,7 +265,7 @@ class SplitterAutoStrategy(SplitterStrategy):
         return pics
 
     @staticmethod
-    def cut(image: np.array) -> np.array:
+    def cut(image):
         """
 
         Cut the image in parameter and keeps no border.
@@ -286,7 +286,7 @@ class SplitterAutoStrategy(SplitterStrategy):
         return np.array(image)
 
     @staticmethod
-    def column_all(image: np.array, index: int) -> np.array:
+    def column_all(image, index: int):
         """
 
         Column all method checks if all values in a specific column are same.
@@ -312,7 +312,7 @@ class SplitterAutoStrategy(SplitterStrategy):
         return True
 
     @staticmethod
-    def cut_top(image: np.array) -> np.array:
+    def cut_top(image):
         """
 
         cut the top of the sprite.
@@ -335,7 +335,7 @@ class SplitterAutoStrategy(SplitterStrategy):
         return image[limit:]
 
     @staticmethod
-    def cut_bottom(image: np.array) -> np.array:
+    def cut_bottom(image):
         """
 
         cut the bottom of the sprite.
@@ -358,7 +358,7 @@ class SplitterAutoStrategy(SplitterStrategy):
         return image[:limit]
 
     @staticmethod
-    def cut_left(image: np.array) -> np.array:
+    def cut_left(image):
         """
 
         cut the left of the sprite.
@@ -381,7 +381,7 @@ class SplitterAutoStrategy(SplitterStrategy):
         return [line[limit:] for line in image]
 
     @staticmethod
-    def cut_right(image: np.array) -> np.array:
+    def cut_right(image):
         """
 
         cut the right of the sprite.
