@@ -1,6 +1,7 @@
 from PIL import Image
 import numpy as np
 from deprecated import deprecated
+from ImageMask import Mask
 import logging
 
 
@@ -229,7 +230,8 @@ class SplitterAutoStrategy(SplitterStrategy):
     def __init__(self, rows: int, columns: int) -> None:
         """
 
-        SplitterStrategy class' constructor, initializes, row and column counts and all margins.
+        SplitterStrategy class' constructor,
+        initializes, row and column counts and all margins.
 
         :param rows: row count
         :param columns: column count
@@ -241,28 +243,30 @@ class SplitterAutoStrategy(SplitterStrategy):
         super().__init__(rows, columns)
         logger.info("end of init super auto")
 
-    def split(self, image: ImageSplitterDecorator):
+    def split(self, img):
         """
+        Take the mask of the spritesheet and split it
+        according to this mask, does not entirely work.
 
-        get the current image as array and split it.
-
-        To split the image, the row size and column size is calculated.
-        from these results, it's possible to split image, row by row and
-        column by column, split is stored as image in a List returned.
-
-        :return: all images stored in a list
-        :rtype: list[PIL.Image]
-
+        :param img: image to split
+        :rtype: list[Image]
+        :return: the lists of sprites
         """
-        logger.info("start split in splitter auto")
-        pictures = super(SplitterAutoStrategy, self).split(image)
-        pics = []
-        for img in pictures:
-            img = np.array(img)
-            img = SplitterAutoStrategy.cut(img)
-            pics.append(Image.fromarray(img))
-        logger.info("end split in splitter auto")
-        return pics
+        contours = Mask(img).find_sprite_contours()
+        sprites = []
+        for contour in contours:
+            top_row, bottom_row, left_col, right_col = contour
+            sprite = img.crop(
+                (
+                    left_col,
+                    top_row,
+                    right_col + 1,
+                    bottom_row + 1
+                )
+            )
+            sprites.append(sprite)
+
+        return sprites
 
     @staticmethod
     def cut(image):

@@ -41,10 +41,8 @@ python3 -m pip install flet
 python3 -m pip install pillow
 python3 -m pip install deprecated
 python3 -m pip install numpy
-python3 -m pip install numpy
-```
-
-```shell
+python3 -m pip install opencv-python
+python3 -m pip install scipy
 cd sprite-sheet-splitter/
 python3 src/Main.py
 ```

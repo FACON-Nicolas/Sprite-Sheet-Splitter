@@ -53,9 +53,11 @@ class ImageSaveComposite:
         logger.info("start save recursively")
         if not os.path.exists(self.path):
             os.mkdir(self.path)
+            logger.debug("path " + self.path + " created successfully.")
         for i in range(len(self.images)):
             name = self.path + self.name + str(i) + '.' + self.type
             self.images[i].save(name)
+            logger.debug("image " + name + " saved successfully.")
         logger.info("end save recursively")
 
     def append(self, image) -> None:
